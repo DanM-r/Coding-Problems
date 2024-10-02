@@ -3,62 +3,88 @@
 #include <stdint.h>
 #include <stdio.h>
 
+void swap(int64_t* val1, int64_t* val2);
+
+void sort2Arrays(int64_t* arr1, int64_t* arr2, int64_t arr_count);
+
 int main() {
-  int64_t weaponClasses = 0;
+  int64_t weaponTypes = 0;
   int64_t metalTypes = 0;
-  scanf("%" SCNi64 " %" SCNi64, &weaponClasses, &metalTypes);
-
-  int64_t requiredIngotsForWeapon[weaponClasses];
-  for (int i = 0; i < weaponClasses; ++i) {
-    scanf("%" SCNi64, &requiredIngotsForWeapon[i]);
-  }
-
-  int64_t ingotsBackForWeapon[weaponClasses];
-  for (int i = 0; i < weaponClasses; ++i) {
-    scanf("%" SCNi64, &ingotsBackForWeapon[i]);
-  }
-
-  int64_t ingotsInInventory[metalTypes];
-  for (int i = 0; i < metalTypes; ++i) {
-    scanf("%" SCNi64, &ingotsInInventory[i]);
-  }
-
-  // Best solution is the one with lowest a_i - b_i
-  bool hasFoundBestSolution = false;
-  int64_t ingotTypeIndex = 0;
   int64_t xp = 0;
-  while (!hasFoundBestSolution) {
 
-    int64_t weaponClassIndex = -1;
-    // Look for the weapong class that gives more ingots back after melting
-    for (int i = 0; i < weaponClasses; ++i) {
-      if (requiredIngotsForWeapon[i] > ingotsInInventory[ingotTypeIndex]) {
-        continue;
-      } else if (weaponClassIndex == -1) {
-        weaponClassIndex = i;
+  scanf("%" SCNi64 " %" SCNi64, &weaponTypes, &metalTypes);
+
+  // Ingot cost for each weapon forging
+  int64_t forgingCosts[weaponTypes];
+  // Ingot cost for each weapon melting
+  // a_i - b_i
+  int64_t meltingCosts[weaponTypes];
+  // Resources
+  int64_t resources[metalTypes];
+
+  for (int i = 0; i < weaponTypes; ++i) {
+    scanf("%" SCNi64, &forgingCosts[i]);
+    meltingCosts[i] = forgingCosts[i];
+  }
+
+  int64_t ingotsBack = 0;
+  for (int i = 0; i < weaponTypes; ++i) {
+    scanf("%" SCNi64, &ingotsBack);
+    meltingCosts[i] -= ingotsBack;
+  }
+
+  for (int i = 0; i < metalTypes; ++i) {
+    scanf("%" SCNi64, &resources[i]);
+  }
+
+  sort2Arrays(meltingCosts, forgingCosts, weaponTypes);
+
+  for (int i = 0; i < weaponTypes; i++)
+  {
+    printf("%li", meltingCosts[i]);
+  }
+
+
+  for (int i = 0; i < metalTypes; ++i)
+  {
+    int j = 0;
+    while (j < weaponTypes)
+    {
+      if (resources[i] >= forgingCosts[j])
+      {
+        resources[i] -= meltingCosts[j];
+        xp += 2;
       }
-      if (requiredIngotsForWeapon[i] <= ingotsInInventory[ingotTypeIndex] &&
-          (requiredIngotsForWeapon[weaponClassIndex] -
-           ingotsBackForWeapon[weaponClassIndex]) >
-              (requiredIngotsForWeapon[i] - ingotsBackForWeapon[i])) {
-        weaponClassIndex = i;
+      else 
+      {
+        j++;
       }
-    }
-
-    if (weaponClassIndex == -1) {
-      ingotTypeIndex++;
-    } else {
-      ingotsInInventory[ingotTypeIndex] -=
-          requiredIngotsForWeapon[weaponClassIndex] -
-          ingotsBackForWeapon[weaponClassIndex];
-      xp += 2;
-    }
-
-    // Stopping condition
-    if (ingotTypeIndex == metalTypes) {
-      hasFoundBestSolution = true;
     }
   }
 
   printf("%" PRIi64 "\n", xp);
+}
+
+void swap(int64_t* val1, int64_t* val2)
+{
+  int64_t temp = *val1;
+  *val1 = *val2;
+  *val2 = temp;
+}
+
+void sort2Arrays(int64_t* arr1, int64_t* arr2, int64_t arr_count)
+{
+  // Sort both arrays
+  // Best sort algorithm: insertion sort because the best case is O(n)
+  // while the worst is O(n^2)
+  for (int i = 1; i < arr_count; ++i)
+  {
+    int temp_i = i;
+    while (arr1[temp_i - 1] > arr1[temp_i])
+    {
+      swap(&arr1[temp_i - 1], &arr1[temp_i]);
+      swap(&arr2[temp_i - 1], &arr2[temp_i]);
+      temp_i -= 1;
+    }
+  }
 }
