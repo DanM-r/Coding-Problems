@@ -14,12 +14,8 @@ int main() {
 
   scanf("%" SCNi64 " %" SCNi64, &weaponTypes, &metalTypes);
 
-  // Ingot cost for each weapon forging
   int64_t forgingCosts[weaponTypes];
-  // Ingot cost for each weapon melting
-  // a_i - b_i
   int64_t meltingCosts[weaponTypes];
-  // Resources
   int64_t resources[metalTypes];
 
   for (int i = 0; i < weaponTypes; ++i) {
@@ -39,21 +35,16 @@ int main() {
 
   sort2Arrays(meltingCosts, forgingCosts, weaponTypes);
 
-  for (int i = 0; i < weaponTypes; i++)
-  {
-    printf("%li", meltingCosts[i]);
-  }
-
-
   for (int i = 0; i < metalTypes; ++i)
   {
     int j = 0;
-    while (j < weaponTypes)
+    while (j < weaponTypes && resources[0] > 0)
     {
       if (resources[i] >= forgingCosts[j])
       {
-        resources[i] -= meltingCosts[j];
-        xp += 2;
+        int amountOfWeapons = resources[i] / forgingCosts[j];
+        resources[i] -= amountOfWeapons * meltingCosts[j];
+        xp += 2 * amountOfWeapons;
       }
       else 
       {
@@ -74,9 +65,6 @@ void swap(int64_t* val1, int64_t* val2)
 
 void sort2Arrays(int64_t* arr1, int64_t* arr2, int64_t arr_count)
 {
-  // Sort both arrays
-  // Best sort algorithm: insertion sort because the best case is O(n)
-  // while the worst is O(n^2)
   for (int i = 1; i < arr_count; ++i)
   {
     int temp_i = i;
